@@ -1,12 +1,12 @@
 package scala.collection.immutable
 
-import com.google.common.cache.{CacheLoader, CacheBuilder}
-import com.rklaehn.summarizer.Summary
+import com.google.common.cache.{ CacheLoader, CacheBuilder }
+import com.rklaehn.persistentsummary.Summary
 import RedBlackTree.Tree
 import scala.collection.immutable.HashMap.HashTrieMap
 import scala.collection.immutable.HashSet.HashTrieSet
 
-object SummaryHelper {
+object PersistentSummaryHelper {
 
   def hashSet[K, S](s: Summary[K, S]): (HashSet[K]) ⇒ S = new HashSetSummarizer[K, S](s)
 
@@ -24,7 +24,7 @@ object SummaryHelper {
 
   def treeSet[K, S](s: Summary[K, S]): (TreeSet[K] ⇒ S) = new TreeSetSummarizer[K, S](s)
 
-  private def nullToGuard(x: AnyRef): AnyRef = if(x eq null) "null" else x
+  private def nullToGuard(x: AnyRef): AnyRef = if (x eq null) "null" else x
 
   private val treeMapAccessor = classOf[scala.collection.immutable.TreeMap[_, _]].getDeclaredField("tree")
   treeMapAccessor.setAccessible(true)
@@ -102,8 +102,8 @@ object SummaryHelper {
 
     def elementSummary(e: (_, _)): S
 
-    private[this] val memo = CacheBuilder.newBuilder().weakKeys().build[HashMap[_,_], AnyRef](new CacheLoader[HashMap[_,_], AnyRef] {
-      override def load(tree: HashMap[_,_]): AnyRef = aggregate(tree).asInstanceOf[AnyRef]
+    private[this] val memo = CacheBuilder.newBuilder().weakKeys().build[HashMap[_, _], AnyRef](new CacheLoader[HashMap[_, _], AnyRef] {
+      override def load(tree: HashMap[_, _]): AnyRef = aggregate(tree).asInstanceOf[AnyRef]
     })
 
     def aggregate(s: HashMap[_, _]): S = s match {

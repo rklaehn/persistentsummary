@@ -1,4 +1,4 @@
-package com.rklaehn.summarizer
+package com.rklaehn.persistentsummary
 
 import org.scalacheck.Properties
 import org.scalacheck.Prop._
@@ -11,22 +11,22 @@ object IntLongSummary extends Summary[Int, Long] {
   override def apply(value: Int): Long = value
 }
 
-object IntIntLongSummary extends Summary[(Int, Int), Long] {
+object IntStringLongSummary extends Summary[(Int, String), Long] {
   override def empty: Long = 0
   override def combine(a: Long, b: Long): Long = a + b
-  override def apply(value: (Int, Int)): Long = value._1.toLong + value._2.toLong
+  override def apply(value: (Int, String)): Long = value._1.toLong + value._2.length.toLong
 }
 
-object SummarizerCheck extends Properties("Summarizer") {
+object PeristentSummaryCheck extends Properties("PersistentSummary") {
 
-  val treeSet = Summarizer.treeSet(IntLongSummary)
-  val treeMapKey = Summarizer.treeMapKey(IntLongSummary)
-  val treeMapValue = Summarizer.treeMapValue(IntLongSummary)
-  val treeMapEntry = Summarizer.treeMapEntry(IntIntLongSummary)
-  val hashSet = Summarizer.hashSet(IntLongSummary)
-  val hashMapKey = Summarizer.hashMapKey(IntLongSummary)
-  val hashMapValue = Summarizer.hashMapValue(IntLongSummary)
-  val hashMapEntry = Summarizer.hashMapEntry(IntIntLongSummary)
+  val treeSet = PersistentSummary.treeSet(IntLongSummary)
+  val treeMapKey = PersistentSummary.treeMapKey(IntLongSummary)
+  val treeMapValue = PersistentSummary.treeMapValue(IntLongSummary)
+  val treeMapEntry = PersistentSummary.treeMapEntry(IntStringLongSummary)
+  val hashSet = PersistentSummary.hashSet(IntLongSummary)
+  val hashMapKey = PersistentSummary.hashMapKey(IntLongSummary)
+  val hashMapValue = PersistentSummary.hashMapValue(IntLongSummary)
+  val hashMapEntry = PersistentSummary.hashMapEntry(IntStringLongSummary)
 
   property("TreeSet[Int].sum") = forAll { x: TreeSet[Int] =>
     treeSet(x) == x.map(_.toLong).sum
@@ -40,8 +40,8 @@ object SummarizerCheck extends Properties("Summarizer") {
     treeMapValue(TreeMap(x.toSeq: _*)) == x.values.map(_.toLong).sum
   }
 
-  property("TreeMap[Int, Int].entries.sum") = forAll { x: Map[Int, Int] =>
-    treeMapEntry(TreeMap(x.toSeq: _*)) == x.map { case (k, v) => k.toLong + v.toLong }.sum
+  property("TreeMap[Int, String].entries.sum") = forAll { x: Map[Int, String] =>
+    treeMapEntry(TreeMap(x.toSeq: _*)) == x.map { case (k, v) => k.toLong + v.length.toLong }.sum
   }
 
   property("HashSet[Int].sum") = forAll { x: HashSet[Int] =>
@@ -56,7 +56,7 @@ object SummarizerCheck extends Properties("Summarizer") {
     hashMapValue(HashMap(x.toSeq: _*)) == x.values.map(_.toLong).sum
   }
 
-  property("HashMap[Int, Int].entries.sum") = forAll { x: Map[Int, Int] =>
-    hashMapEntry(HashMap(x.toSeq: _*)) == x.map { case (k, v) => k.toLong + v.toLong }.sum
+  property("HashMap[Int, String].entries.sum") = forAll { x: Map[Int, String] =>
+    hashMapEntry(HashMap(x.toSeq: _*)) == x.map { case (k, v) => k.toLong + v.length.toLong }.sum
   }
 }

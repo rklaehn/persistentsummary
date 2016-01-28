@@ -1,4 +1,4 @@
-package com.rklaehn.summarizer
+package com.rklaehn.persistentsummary
 
 import ichi.bench.Thyme
 

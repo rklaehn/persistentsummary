@@ -73,5 +73,5 @@ lazy val root = project.in(file("."))
   .settings(noPublish: _*)
 
 lazy val core = project.in(file("."))
-  .settings(name := "summarizer")
+  .settings(name := "persistentsummary")
   .settings(summarizerSettings: _*)
