@@ -81,7 +81,7 @@ digraph G {
 }
 )
 
-As you can see, the structure of both trees is mostly the same, and will be shared in a good implementation.
+As you can see, the structure of both trees is mostly the same, and will be shared in a good implementation. So any summary information that is attached to a subtree *will not have to be recalculated* when doing a small change to a big tree.
 
 ## Supported collections
 
