@@ -13,7 +13,7 @@ object SimpleSummaryBench extends App {
   def buildCached(n: Int): Long = {
     var current = TreeSet.empty[Int]
     var totalSum = 0L
-    for(i ← 0 until n) {
+    for (i ← 0 until n) {
       current += i
       totalSum += summarizer(current)
     }
@@ -23,14 +23,20 @@ object SimpleSummaryBench extends App {
   def buildUncached(n: Int): Long = {
     var current = TreeSet.empty[Int]
     var totalSum = 0L
-    for(i ← 0 until n) {
+    for (i ← 0 until n) {
       current += i
       totalSum += current.iterator.map(_.toLong).sum
     }
     totalSum
-
   }
 
   val n = 5000
+  val s = TreeSet(0 until n: _*)
+  def accessSummary(): Long = {
+    summarizer(s)
+  }
+
+  th.pbenchWarm(th.Warm(accessSummary()), title = "access")
   th.pbenchOffWarm(s"build 1 to $n uncached vs. cached")(th.Warm(buildUncached(n)))(th.Warm(buildCached(n)))
+
 }

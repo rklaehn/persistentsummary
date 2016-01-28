@@ -1,7 +1,7 @@
 package scala.collection.immutable
 
 import com.rklaehn.persistentsummary.Tree
-import scala.collection.immutable.{RedBlackTree => RB}
+import scala.collection.immutable.{ RedBlackTree => RB }
 
 object CollectionTreeUtil {
 
@@ -31,12 +31,12 @@ object CollectionTreeUtil {
 
   private def foreachNode[N, E, U](tree: Tree[N, E], node: N)(f: N ⇒ U): Unit = {
     f(node)
-    for(i ← 0 until tree.childCount(node))
+    for (i ← 0 until tree.childCount(node))
       foreachNode(tree, tree.child(node, i))(f)
   }
 
   private def foreachEdge[N, E, U](tree: Tree[N, E], node: N)(f: (N, N) ⇒ U): Unit = {
-    for(i ← 0 until tree.childCount(node)) {
+    for (i ← 0 until tree.childCount(node)) {
       val child = tree.child(node, i)
       f(node, child)
       foreachEdge(tree, child)(f)
@@ -82,17 +82,17 @@ object CollectionTreeUtil {
   private def redBlackTree[K, V]: Tree[RB.Tree[K, V], RB.Tree[K, V]] = new Tree[RB.Tree[K, V], RB.Tree[K, V]] {
 
     def childCount(tree: RB.Tree[K, V]) =
-      if(tree eq null) 0
-      else (if(tree.left ne null) 1 else 0) + (if(tree.right ne null) 1 else 0)
+      if (tree eq null) 0
+      else (if (tree.left ne null) 1 else 0) + (if (tree.right ne null) 1 else 0)
 
     def value(tree: RB.Tree[K, V]) =
-      if(tree eq null) None else Some(tree)
+      if (tree eq null) None else Some(tree)
 
     def child(tree: RB.Tree[K, V], index: Int) = {
-      if(index < 0 || index > childCount(tree))
+      if (index < 0 || index > childCount(tree))
         throw new IndexOutOfBoundsException
-      if(index == 0)
-        if(tree.left ne null) tree.left else tree.right
+      if (index == 0)
+        if (tree.left ne null) tree.left else tree.right
       else
         tree.right
     }
