@@ -17,7 +17,7 @@ object IntStringLongSummary extends Summary[(Int, String), Long] {
   override def apply(value: (Int, String)): Long = value._1.toLong + value._2.length.toLong
 }
 
-object PeristentSummaryCheck extends Properties("PersistentSummary") {
+object PersistentSummaryCheck extends Properties("PersistentSummary") {
 
   val treeSet = PersistentSummary.treeSet(IntLongSummary)
   val treeMapKey = PersistentSummary.treeMapKey(IntLongSummary)
