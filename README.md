@@ -83,6 +83,55 @@ digraph G {
 
 As you can see, the structure of both trees is mostly the same, and will be shared in a good implementation. So any summary information that is attached to a subtree *will not have to be recalculated* when doing a small change to a big tree.
 
+Here are the two trees merged into one. As you can see, a lot of the nodes are shared, so the summaries for these nodes would also be shared.
+
+![TreeSet internal structure](http://g.gravizo.com/g?
+digraph G {
+  aize="4,4"
+  node [shape=box,style="filled, rounded",fillcolor="white"]
+  n7181ae3f [label="61",color="black"]
+  n62fdb4a6 [label="28",color="black"]
+  n11e21d0e [label="21",color="black"]
+  n1dd02175 [label="31",color="black"]
+  n31206beb [label="60",color="red"]
+  n3e77a1ed [label="73",color="black"]
+  n3ffcd140 [label="71",color="black"]
+  n23bb8443 [label="77",color="red"]
+  n1176dcec [label="76",color="black"]
+  n120d6fe6 [label="78",color="black"]
+  n7181ae3f -> n62fdb4a6
+  n62fdb4a6 -> n11e21d0e
+  n62fdb4a6 -> n1dd02175
+  n1dd02175 -> n31206beb
+  n7181ae3f -> n3e77a1ed
+  n3e77a1ed -> n3ffcd140
+  n3e77a1ed -> n23bb8443
+  n23bb8443 -> n1176dcec
+  n23bb8443 -> n120d6fe6
+  n38364841 [label="61",color="black"]
+  n62fdb4a6 [label="28",color="black"]
+  n11e21d0e [label="21",color="black"]
+  n1dd02175 [label="31",color="black"]
+  n31206beb [label="60",color="red"]
+  n28c4711c [label="73",color="black"]
+  n3ffcd140 [label="71",color="black"]
+  n59717824 [label="77",color="red"]
+  n1176dcec [label="76",color="black"]
+  n146044d7 [label="78",color="black"]
+  n1e9e725a [label="87",color="red"]
+  n38364841 -> n62fdb4a6
+  n62fdb4a6 -> n11e21d0e
+  n62fdb4a6 -> n1dd02175
+  n1dd02175 -> n31206beb
+  n38364841 -> n28c4711c
+  n28c4711c -> n3ffcd140
+  n28c4711c -> n59717824
+  n59717824 -> n1176dcec
+  n59717824 -> n146044d7
+  n146044d7 -> n1e9e725a
+}
+)
+
 ## Supported collections
 
 The approach of persistent summaries only makes sense for tree-based, immutable collections. So currently the following collections from `scala.collection.immutable` are supported:
