@@ -176,7 +176,8 @@ Despite all these hairy details, I am confident that the approach will work for 
 
 ## Limitations
 
-Because of the dependency on the google guava library, this library will not work on scala.js.
+- Because of the dependency on the google guava library, this library will not work on scala.js.
+- Summaries are added to tree nodes using a guava cache with weak keys. There is some overhead over having the summary as a simple field of the tree node. For complex summaries, this won't matter much. But for simple summaries such as in the sum example above, it might be better to just recalculate the sum from scratch.
 
 ## Alternatives
 
