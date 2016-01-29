@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/rklaehn/persistentsummary.png)](https://travis-ci.org/rklaehn/persistentsummary)
+[![codecov.io](http://codecov.io/github/rklaehn/persistentsummary/coverage.svg?branch=master)](http://codecov.io/github/rklaehn/persistentsummary?branch=master)
 
 # PersistentSummary
 
@@ -19,6 +20,7 @@ val set = TreeSet(0 until 10000: _*)
 
 println(sum(set))
 
+// add an element. Most of the underlying tree of set will be reused
 val set1 = set + 20000
 // will reuse calculation from last call
 println(sum(set1))
