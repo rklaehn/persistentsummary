@@ -33,7 +33,7 @@ println(set1.sum)
 
 ## What's a Summary
 
-A summary is an aggregation function that is computed from the elements of a `Set` or `Seq`, or the keys, values or entries of a `Map`.
+A summary is a value that is computed from all elements of a `Set` or `Seq`, or the keys, values or entries of a `Map`.
 
 Here is the typeclass that is used to define summaries.
 
