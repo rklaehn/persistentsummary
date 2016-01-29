@@ -29,7 +29,7 @@ println(sum(set1))
 println(set1.sum)
 ```
 
-## Summary
+## What's a Summary
 
 A summary is an aggregation function that is computed from the elements of a `Set` or `Seq`, or the keys, values or entries of a `Map`.
 
@@ -45,7 +45,7 @@ trait Summary[A, S] {
 
 You need to provide a way to create a summary from a single node, an empty summary, and a way to combine summaries which must be associative. Basically you need a total function `A => S` from the element type `A` to the summary type `S`, and a `Monoid[S]` instance for the summary. We are not using any of the monoid typeclasses from other libraries to avoid dependencies.
 
-## Persistence
+## How does it work
 
 Immutable scala collections are persistent and use structural sharing. So e.g. adding a single element to a large set will not create a copy of the entire set, but just of a few tree nodes. This library allows adding summary information to the tree nodes and *reusing* the summary information to compute the summary of the updated set without having to recalculate the summary of all elements.
 
@@ -166,7 +166,76 @@ The approach of persistent summaries only makes sense for tree-based, immutable 
   - keys, values, entries
 - `HashSet`
 - `HashMap`
-  - keys, values, entries 
+  - keys, values, entries
+
+## Non-trivial example
+
+Imagine you have a large collection of `Double` samples (e.g. some measurement data), and you want to keep statistics such as the average and standard deviation for them. *You also want to keep the data up to date when new data is coming in*.
+
+Here is how you would solve this using a persistent summary:
+
+```scala
+// summary that tracks count, sum and sum of squares of double values
+val stdDevSummary = new Summary[Double, (Long, Double, Double)] {
+  override def empty: (Long, Double, Double) = (0L, 0, 0)
+  override def apply(value: Double): (Long, Double, Double) = (1L, value, value * value)
+  override def combine(a: (Long, Double, Double), b: (Long, Double, Double)): (Long, Double, Double) =
+    (a._1 + b._1, a._2 + b._2, a._3 + b._3)
+}
+
+// caching summary function
+val cachedSummary = PersistentSummary.treeMapValue(stdDevSummary)
+
+// function that transforms the results into count, average and standard deviation
+def avgAndStdDev(values: TreeMap[Int, Double]): (Long, Double, Double) = {
+  val (n, sum, sum2) = cachedSummary(values)
+  val avg = sum / n
+  val variance = sum2 / (n - 1) - (sum * sum) / (n * (n - 1.0))
+  val stdDev = math.sqrt(variance)
+  (n, avg, stdDev)
+}
+
+// sample usage
+
+// make a test collection and print statistics
+val max = 16 * 1024
+val elements: TreeMap[Int, Double] = TreeMap((0 until max).map { i => i -> (i % 16).toDouble }: _*)
+println(avgAndStdDev(elements))
+
+// modify elements and print statistics again
+val elements1 = elements + (max / 2 -> 1000.0)
+println(avgAndStdDev(elements1))
+```
+
+### Benchmark
+
+```scala
+val th = Thyme.warmed(warmth = Thyme.HowWarm.BenchOff, verbose = println)
+
+def stdDevUncached(): Double = {
+  val elements1 = elements + (max / 2 -> 1000.0)
+  StdDevCalculator.avgAndStdDevUncached(elements1)._3
+}
+
+def stdDevCached(): Double = {
+  val elements1 = elements + (max / 2 -> 1000.0)
+  StdDevCalculator.avgAndStdDev(elements1)._3
+}
+
+th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevUncached()))(th.Warm(stdDevCached()))
+```
+
+### Results
+
+YMMV, as usual with benchmarks
+
+```
+Benchmark comparison (in 13.12 s): average and stddev when modifying one element in a collection of size 16384
+Significantly different (p ~= 0)
+  Time ratio:    0.01704   95% CI 0.01361 - 0.02047   (n=20)
+    First     601.2 us   95% CI 543.2 us - 659.1 us
+    Second    10.24 us   95% CI 8.433 us - 12.06 us
+```
 
 ## Implementation details
 
