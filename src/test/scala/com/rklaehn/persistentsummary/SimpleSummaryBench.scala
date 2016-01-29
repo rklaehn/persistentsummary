@@ -36,7 +36,23 @@ object SimpleSummaryBench extends App {
     summarizer(s)
   }
 
+  def summarySmallChange(): Long = {
+    val s1 = s + 10000
+    summarizer(s)
+  }
+
+  def sumSmallChange(): Long = {
+    val s1 = s + 10000
+    s1.iterator.map(_.toLong).sum
+  }
+
+  println("measures the time to access an already existing summary from a guava cache with weak keys")
   th.pbenchWarm(th.Warm(accessSummary()), title = "access")
+
+  println("compares persistent summary with recalculating from scratch every time")
   th.pbenchOffWarm(s"build 1 to $n uncached vs. cached")(th.Warm(buildUncached(n)))(th.Warm(buildCached(n)))
+
+  println("compare persistent summary with recalculating from scratch (single update to large collection)")
+  th.pbenchOffWarm(s"update 5000 / 1 uncached vs. cached")(th.Warm(sumSmallChange()))(th.Warm(summarySmallChange()))
 
 }
