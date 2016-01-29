@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rklaehn/persistentsummary.png)](https://travis-ci.org/rklaehn/persistentsummary)
+
 # PersistentSummary
 
 This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections. This can yield to large efficiency gains when retaining a complex summary property of large collections.
