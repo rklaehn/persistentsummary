@@ -1,8 +1,26 @@
 # PersistentSummary
 
-This library allows to define persistent summaries of immutable, tree-based scala collections. This can yield to large efficiency gains when working with [persistent collections](https://en.wikipedia.org/wiki/Persistent_data_structure) that use structural sharing.
+This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections. This can yield to large efficiency gains when retaining a complex summary property of large collections.
 
-There are some specialized collections that keep a summary property. E.g. this [FingerTree](https://github.com/Sciss/FingerTree). This library instead provides the ability to add any number of arbitrary summaries to ***existing*** immutable scala collections.
+## Demo
+
+```scala
+val sumOfElements = new Summary[Int, Int] {
+  override def empty: Int = 0
+  override def combine(a: Int, b: Int): Int = a + b
+  override def apply(value: Int): Int = value
+}
+
+val sum = PersistentSummary.treeSet(sumOfElements)
+
+val set = TreeSet(0 until 10000: _*)
+
+println(sum(set))
+
+val set1 = set + 20000
+// will reuse calculation from last call
+println(sum(set1))
+```
 
 ## Summary
 
@@ -152,3 +170,7 @@ Despite all these hairy details, I am confident that the approach will work for 
 ## Limitations
 
 Because of the dependency on the google guava library, this library will not work on scala.js.
+
+## Alternatives
+
+There are some specialized collections that keep a summary property. E.g. this [FingerTree](https://github.com/Sciss/FingerTree).
