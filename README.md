@@ -20,6 +20,9 @@ println(sum(set))
 val set1 = set + 20000
 // will reuse calculation from last call
 println(sum(set1))
+
+// this will do the entire calculation from scratch
+println(set1.sum)
 ```
 
 ## Summary
