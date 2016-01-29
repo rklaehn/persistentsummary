@@ -1,7 +1,6 @@
 package scala.collection.immutable
 
 import com.google.common.cache.{CacheBuilderSpec, CacheLoader, CacheBuilder}
-import com.rklaehn.persistentsummary.PersistentSummary.Config
 import com.rklaehn.persistentsummary.Summary
 import RedBlackTree.Tree
 import scala.collection.immutable.HashMap.HashTrieMap
