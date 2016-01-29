@@ -243,7 +243,7 @@ Significantly different (p ~= 0)
 
 You don't want to know. Trust me. In case you do: this library is using reflection to get at some internals of the scala collections. It is also partially implemented in the scala.collections.immutable namespace to get around access restrictions. And it uses a WeakReference based cache from google [guava collections](https://github.com/google/guava) in order to prevent memory leaks.
 
-Despite all these hairy details, I am confident that the approach will work for at least the 2.11 and 2.12 version of scala. There is a certain performance overhead due to the weak reference based cache, but nothing to worry about if you do complex summaries. See the benchmarks.
+Despite all these hairy details, I am confident that the approach will work for the forseeable future, unless there is a major redesign of the collections library. There is a certain performance overhead due to the weak reference based cache, but nothing to worry about if you do complex summaries. See the benchmarks.
 
 ## Limitations
 
