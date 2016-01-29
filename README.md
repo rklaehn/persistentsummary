@@ -5,7 +5,7 @@
 
 # PersistentSummary
 
-This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections. This can yield to large efficiency gains when retaining a complex summary property of large collections.
+This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections such as [`scala.collection.immutable.TreeSet`](http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.TreeSet). This can yield to large efficiency gains when retaining a complex summary property of large collections.
 
 ## Demo
 
@@ -33,7 +33,7 @@ println(set1.sum)
 
 ## What's a Summary
 
-A summary is an aggregation function that is computed from the elements of a `Set` or `Seq`, or the keys, values or entries of a `Map`.
+A summary is a value that is computed from all elements of a `Set` or `Seq`, or the keys, values or entries of a `Map`.
 
 Here is the typeclass that is used to define summaries.
 
@@ -241,9 +241,9 @@ Significantly different (p ~= 0)
 
 ## Implementation details
 
-You don't want to know. Trust me. In case you do: this library is using reflection to get at some internals of the scala collections. It is also partially implemented in the scala.collections.immutable namespace to get around access restrictions. And it uses a WeakReference based cache from google [guava collections](https://github.com/google/guava) in order to prevent memory leaks.
+This library is using reflection to get at some internals of the scala collections. It is also partially implemented in the scala.collections.immutable namespace to get around access restrictions. And it uses a WeakReference based cache from google [guava collections](https://github.com/google/guava) in order to prevent memory leaks.
 
-Despite all these hairy details, I am confident that the approach will work for at least the 2.11 and 2.12 version of scala. There is a certain performance overhead due to the weak reference based cache, but nothing to worry about if you do complex summaries. See the benchmarks.
+Despite all these hairy details, I am confident that the approach will work for the forseeable future, unless there is a major redesign of the collections library. There is a certain performance overhead due to the weak reference based cache, but nothing to worry about if you do complex summaries. See the benchmarks.
 
 ## Limitations
 
