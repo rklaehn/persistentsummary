@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/rklaehn/persistentsummary.png)](https://travis-ci.org/rklaehn/persistentsummary)
 [![codecov.io](http://codecov.io/github/rklaehn/persistentsummary/coverage.svg?branch=master)](http://codecov.io/github/rklaehn/persistentsummary?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.rklaehn/persistentsummary_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.rklaehn/persistentsummary_2.11)
+[![Scaladoc](http://javadoc-badge.appspot.com/com.rklaehn/persistentsummary_2.11.svg?label=scaladoc)](http://javadoc-badge.appspot.com/com.rklaehn/persistentsummary_2.11)
 
 # PersistentSummary
 
