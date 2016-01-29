@@ -107,7 +107,7 @@ object PersistentSummary {
     * Configuration object to configure the underlying guava cache
     * @param spec the CacheBuilderSpec to use
     */
-  final class Config(val spec: CacheBuilderSpec)
+  final case class Config(spec: CacheBuilderSpec)
 
   trait Config0 {
 
