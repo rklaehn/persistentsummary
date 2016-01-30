@@ -103,7 +103,7 @@ object PersistentSummaryHelper {
       apply0(s)
   }
 
-  private class VectorSummarizer[A, S](val summary: Summary[A, S], val spec: CacheBuilderSpec) extends (Vector[A] => S) {
+  private[immutable] class VectorSummarizer[A, S](val summary: Summary[A, S], val spec: CacheBuilderSpec) extends (Vector[A] => S) {
 
     val memo = CacheBuilder.from(spec).build[Array[AnyRef], AnyRef]
 
@@ -114,17 +114,13 @@ object PersistentSummaryHelper {
         case 3 => s.display2
         case 4 => s.display3
         case 5 => s.display4
-        // $COVERAGE-OFF$
         case 6 => s.display5
-        // $COVERAGE-ON$
         case _ => null
       }
     }
 
     def aggregate(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = depth match {
-      // $COVERAGE-OFF$
       case 0 => summary.empty
-      // $COVERAGE-ON$
       case 1 =>
         var i = 0
         var r = summary.empty
