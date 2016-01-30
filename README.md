@@ -211,19 +211,19 @@ def stdDevCached(): Double = {
   avgAndStdDev(elements1)._3
 }
 
-th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevUncached()))(th.Warm(stdDevCached()))
+th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevCached()))(th.Warm(stdDevUncached()))
 ```
 
 ### Results
 
-YMMV, as usual with benchmarks
+YMMV, as usual with benchmarks. Obviously the huge performance improvement is bought by additional memory usage, so you will have to look at this closely in a real world application.
 
 ```
-Benchmark comparison (in 23.05 s): average and stddev when modifying one element in a collection of size 16384
+Benchmark comparison (in 22.29 s): average and stddev when modifying one element in a collection of size 16384
 Significantly different (p ~= 0)
-  Time ratio:    0.01295   95% CI 0.01160 - 0.01430   (n=20)
-    First     494.1 us   95% CI 443.2 us - 545.0 us
-    Second    6.397 us   95% CI 6.298 us - 6.497 us
+  Time ratio:    82.82733   95% CI 75.32669 - 90.32797   (n=20)
+    First     5.999 us   95% CI 5.912 us - 6.086 us
+    Second    496.9 us   95% CI 452.5 us - 541.3 us
 ```
 
 ## Configuration
