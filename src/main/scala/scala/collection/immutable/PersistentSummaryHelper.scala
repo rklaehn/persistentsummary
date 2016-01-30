@@ -130,24 +130,29 @@ object PersistentSummaryHelper {
       * @param i1 the maximum valid index (excluded)
       */
     def aggregate(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = depth match {
-      case 0 => summary.empty
+      case 0 =>
+        // this is never called (except from a test) because it is handled before. This is just left in for completeness
+        summary.empty
       case 1 =>
+        // mutable while loop code for performance
         var i = 0
         var r = summary.empty
         while (i < children.length) {
-          val element = children(i)
+          // only summarizing the indices inside prevents NPE
           if (i0 <= i && i < i1)
-            r = summary.combine(r, summary.apply(element.asInstanceOf[A]))
+            r = summary.combine(r, summary.apply(children(i).asInstanceOf[A]))
           i += 1
         }
         r
       case _ =>
+        // mutable while loop code for performance
         var i = 0
         var r = summary.empty
         val shift = (depth - 1) * 5
         while (i < children.length) {
           val child = children(i)
           val o = i << shift
+          // just do null checks for everything instead of checking the indices. For branches this is safe.
           if (child ne null)
             r = summary.combine(r, aggregateMemo(child.asInstanceOf[Array[AnyRef]], depth - 1, i0 - o, i1 - o))
           i += 1
@@ -160,12 +165,14 @@ object PersistentSummaryHelper {
       */
     def aggregateMemo(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = {
       if (depth == 0) summary.empty
-      else
+      else {
+        // lots of ugly casting because guava cache requires AnyRef, and S isn't
         memo.get(children, new Callable[AnyRef] {
           override def call(): AnyRef = {
             aggregate(children, depth, i0, i1).asInstanceOf[AnyRef]
           }
         }).asInstanceOf[S]
+      }
     }
 
     def apply(v: Vector[A]): S = {
