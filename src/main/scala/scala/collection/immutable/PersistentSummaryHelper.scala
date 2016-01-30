@@ -1,5 +1,7 @@
 package scala.collection.immutable
 
+import java.util.concurrent.Callable
+
 import com.google.common.cache.{CacheBuilderSpec, CacheLoader, CacheBuilder}
 import com.rklaehn.persistentsummary.Summary
 import RedBlackTree.Tree
@@ -103,6 +105,8 @@ object PersistentSummaryHelper {
 
   private class VectorSummarizer[A, S](val summary: Summary[A, S], val spec: CacheBuilderSpec) extends (Vector[A] => S) {
 
+    val memo = CacheBuilder.from(spec).build[Array[AnyRef], AnyRef]
+
     def getChildren(s: VectorIterator[A]): Array[AnyRef] = {
       s.depth match {
         case 1 => s.display0
@@ -110,46 +114,56 @@ object PersistentSummaryHelper {
         case 3 => s.display2
         case 4 => s.display3
         case 5 => s.display4
+        // $COVERAGE-OFF$
         case 6 => s.display5
+        // $COVERAGE-ON$
         case _ => null
       }
     }
 
-    def aggregate(children: Array[AnyRef], depth: Int, offset:Int, start: Int, max: Int): S =
-      if(children eq null) summary.empty
-      else depth match {
-        case 0 => summary.empty
-        case 1 =>
-          var i = 0
-          var o = offset
-          var r = summary.empty
-          while(i < children.length) {
-            val element = children(i)
-            if(element ne null)
-              r = summary.combine(r, summary.apply(element.asInstanceOf[A]))
-            o += 1
-            i += 1
+    def aggregate(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = depth match {
+      // $COVERAGE-OFF$
+      case 0 => summary.empty
+      // $COVERAGE-ON$
+      case 1 =>
+        var i = 0
+        var r = summary.empty
+        while (i < children.length) {
+          val element = children(i)
+          if (i0 <= i && i < i1)
+            r = summary.combine(r, summary.apply(element.asInstanceOf[A]))
+          i += 1
+        }
+        r
+      case _ =>
+        var i = 0
+        var r = summary.empty
+        val shift = (depth - 1) * 5
+        while (i < children.length) {
+          val child = children(i)
+          val o = i << shift
+          if (child ne null)
+            r = summary.combine(r, aggregateMemo(child.asInstanceOf[Array[AnyRef]], depth - 1, i0 - o, i1 - o))
+          i += 1
+        }
+        r
+    }
+
+    def aggregateMemo(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = {
+      if (depth == 0) summary.empty
+      else
+        memo.get(children, new Callable[AnyRef] {
+          override def call(): AnyRef = {
+            aggregate(children, depth, i0, i1).asInstanceOf[AnyRef]
           }
-          r
-        case _ =>
-          var i = 0
-          var o = offset
-          var r = summary.empty
-          while(i < children.length) {
-            val child = children(i)
-            if(child ne null)
-              r = summary.combine(r, aggregate(child.asInstanceOf[Array[AnyRef]], depth - 1, o, start, max))
-            o += (1 << (depth * 5))
-            i += 1
-          }
-          r
-      }
+        }).asInstanceOf[S]
+    }
 
     def apply(v: Vector[A]): S = {
       // the iterator also has the display pointers, so it is essentially a vector itself. But calling v.iterator
       // will take care of the dirty flag handling for us.
-      val iter = v.iterator
-      aggregate(getChildren(iter), iter.depth, 0, v.startIndex, v.endIndex)
+      val it = v.iterator
+      aggregateMemo(getChildren(it), it.depth, v.startIndex, v.endIndex)
     }
   }
 
