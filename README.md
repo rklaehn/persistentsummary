@@ -226,6 +226,12 @@ Significantly different (p ~= 0)
     Second    6.397 us   95% CI 6.298 us - 6.497 us
 ```
 
+## Configuration
+
+All the heavy lifting inside a persistent summary is done by a [guava cache](https://github.com/google/guava/wiki/CachesExplained). To configure this cache, you can pass a `PersistentSummary.Config` instance, which currently just contains a [`CacheBuilderSpec`](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilderSpec.html). The default configuration has weak keys, but no expiry rules. This will lead to summaries being kept indefinitely as long as the corresponding data is reachable, and summaries being collected as soon as the corresponding data is collected.
+
+For a real life use case, you will probably want to set expiry or max cache size rules to avoid excessive memory consumption. I would suggest putting a string representation of the CacheBuilderSpec into a config file.
+
 ## Implementation details
 
 This library is using reflection to get at some internals of the scala collections. It is also partially implemented in the scala.collections.immutable namespace to get around access restrictions. And it uses a WeakReference based cache from google [guava collections](https://github.com/google/guava) in order to prevent memory leaks.
