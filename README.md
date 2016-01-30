@@ -177,19 +177,9 @@ Imagine you have a large collection of `Double` samples (e.g. some measurement d
 Here is how you would solve this using a persistent summary:
 
 ```scala
-// summary that tracks count, sum and sum of squares of double values
-val stdDevSummary = new Summary[Double, (Long, Double, Double)] {
-  override def empty: (Long, Double, Double) = (0L, 0, 0)
-  override def apply(value: Double): (Long, Double, Double) = (1L, value, value * value)
-  override def combine(a: (Long, Double, Double), b: (Long, Double, Double)): (Long, Double, Double) =
-    (a._1 + b._1, a._2 + b._2, a._3 + b._3)
-}
+val cachedSummary = PersistentSummary.vector(StdDevSummary)
 
-// caching summary function
-val cachedSummary = PersistentSummary.treeMapValue(stdDevSummary)
-
-// function that transforms the results into count, average and standard deviation
-def avgAndStdDev(values: TreeMap[Int, Double]): (Long, Double, Double) = {
+def avgAndStdDev(values: Vector[Double]): (Long, Double, Double) = {
   val (n, sum, sum2) = cachedSummary(values)
   val avg = sum / n
   val variance = sum2 / (n - 1) - (sum * sum) / (n * (n - 1.0))
@@ -197,15 +187,12 @@ def avgAndStdDev(values: TreeMap[Int, Double]): (Long, Double, Double) = {
   (n, avg, stdDev)
 }
 
-// sample usage
-
-// make a test collection and print statistics
 val max = 16 * 1024
-val elements: TreeMap[Int, Double] = TreeMap((0 until max).map { i => i -> (i % 16).toDouble }: _*)
+
+val elements: Vector[Double] = Vector((0 until max).map { i => (i % 16).toDouble }: _*)
 println(avgAndStdDev(elements))
 
-// modify elements and print statistics again
-val elements1 = elements + (max / 2 -> 1000.0)
+val elements1 = elements.updated(max / 2, 1000.0)
 println(avgAndStdDev(elements1))
 ```
 
@@ -215,13 +202,13 @@ println(avgAndStdDev(elements1))
 val th = Thyme.warmed(warmth = Thyme.HowWarm.BenchOff, verbose = println)
 
 def stdDevUncached(): Double = {
-  val elements1 = elements + (max / 2 -> 1000.0)
-  StdDevCalculator.avgAndStdDevUncached(elements1)._3
+  val elements1 = elements.updated(max / 2, 1000.0)
+  avgAndStdDevUncached(elements1)._3
 }
 
 def stdDevCached(): Double = {
-  val elements1 = elements + (max / 2 -> 1000.0)
-  StdDevCalculator.avgAndStdDev(elements1)._3
+  val elements1 = elements.updated(max / 2, 1000.0)
+  avgAndStdDev(elements1)._3
 }
 
 th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevUncached()))(th.Warm(stdDevCached()))
@@ -232,11 +219,11 @@ th.pbenchOffWarm(s"average and stddev when modifying one element in a collection
 YMMV, as usual with benchmarks
 
 ```
-Benchmark comparison (in 13.12 s): average and stddev when modifying one element in a collection of size 16384
+Benchmark comparison (in 23.05 s): average and stddev when modifying one element in a collection of size 16384
 Significantly different (p ~= 0)
-  Time ratio:    0.01704   95% CI 0.01361 - 0.02047   (n=20)
-    First     601.2 us   95% CI 543.2 us - 659.1 us
-    Second    10.24 us   95% CI 8.433 us - 12.06 us
+  Time ratio:    0.01295   95% CI 0.01160 - 0.01430   (n=20)
+    First     494.1 us   95% CI 443.2 us - 545.0 us
+    Second    6.397 us   95% CI 6.298 us - 6.497 us
 ```
 
 ## Implementation details
