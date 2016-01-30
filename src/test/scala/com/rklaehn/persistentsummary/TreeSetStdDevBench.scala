@@ -45,5 +45,5 @@ object TreeSetStdDevBench extends App {
     avgAndStdDev(elements1)._3
   }
 
-  th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevUncached()))(th.Warm(stdDevCached()))
+  th.pbenchOffWarm(s"average and stddev when modifying one element in a collection of size $max")(th.Warm(stdDevCached()))(th.Warm(stdDevUncached()))
 }
