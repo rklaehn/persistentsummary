@@ -107,6 +107,9 @@ object PersistentSummaryHelper {
 
     val memo = CacheBuilder.from(spec).build[Array[AnyRef], AnyRef]
 
+    /**
+      * Give the immediate children of a node. We do not care about the other display pointers
+      */
     def getChildren(s: VectorIterator[A]): Array[AnyRef] = {
       s.depth match {
         case 1 => s.display0
@@ -119,6 +122,13 @@ object PersistentSummaryHelper {
       }
     }
 
+    /**
+      * Calculate the summary for a node
+      * @param children the children to aggregate. Nodes or values depending on the depth
+      * @param depth the depth. 1 for when children contain values
+      * @param i0 the minimum valid index (included)
+      * @param i1 the maximum valid index (excluded)
+      */
     def aggregate(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = depth match {
       case 0 => summary.empty
       case 1 =>
@@ -145,6 +155,9 @@ object PersistentSummaryHelper {
         r
     }
 
+    /**
+      * The version of the aggregation function that first looks in the cache
+      */
     def aggregateMemo(children: Array[AnyRef], depth: Int, i0: Int, i1: Int): S = {
       if (depth == 0) summary.empty
       else
