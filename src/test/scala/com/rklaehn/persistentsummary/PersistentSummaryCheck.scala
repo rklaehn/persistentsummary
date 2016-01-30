@@ -27,6 +27,16 @@ object PersistentSummaryCheck extends Properties("PersistentSummary") {
   val hashMapKey = PersistentSummary.hashMapKey(IntLongSummary)
   val hashMapValue = PersistentSummary.hashMapValue(IntLongSummary)
   val hashMapEntry = PersistentSummary.hashMapEntry(IntStringLongSummary)
+  val vector = PersistentSummary.vector(IntLongSummary)
+
+  property("Vector[Int].sum") = forAll { d: Vector[Vector[Int]] =>
+    val x = d.flatten
+    val y = x.drop(1)
+    val z = x.drop(x.length / 2).dropRight(1)
+    (x.map(_.toLong).sum == vector(x)) &&
+    (y.map(_.toLong).sum == vector(y)) &&
+    (z.map(_.toLong).sum == vector(z))
+  }
 
   property("TreeSet[Int].sum") = forAll { x: TreeSet[Int] =>
     treeSet(x) == x.map(_.toLong).sum

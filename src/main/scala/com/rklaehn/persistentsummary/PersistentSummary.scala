@@ -104,6 +104,17 @@ object PersistentSummary {
     PersistentSummaryHelper.hashMapEntry(summary, config.spec)
 
   /**
+    * Summarize the elements of a Vector
+    * @param summary the kind of summary to use
+    * @param config the cache configuration
+    * @tparam K the element type
+    * @tparam S the summary type
+    * @return a function that performs the summary
+    */
+  def vector[K, S](summary: Summary[K, S])(implicit config: Config): (Vector[K] => S) =
+    PersistentSummaryHelper.vector(summary, config.spec)
+
+  /**
     * Configuration object to configure the underlying guava cache
     * @param spec the CacheBuilderSpec to use
     */

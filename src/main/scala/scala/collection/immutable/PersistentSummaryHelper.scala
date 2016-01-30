@@ -24,6 +24,8 @@ object PersistentSummaryHelper {
 
   def treeSet[K, S](s: Summary[K, S], spec: CacheBuilderSpec): (TreeSet[K] ⇒ S) = new TreeSetSummarizer[K, S](s, spec)
 
+  def vector[A, S](s: Summary[A, S], spec: CacheBuilderSpec): (Vector[A] ⇒ S) = new VectorSummarizer[A, S](s, spec)
+
   private def nullToGuard(x: AnyRef): AnyRef = if (x eq null) "null" else x
 
   private val treeMapAccessor = classOf[scala.collection.immutable.TreeMap[_, _]].getDeclaredField("tree")
@@ -97,6 +99,58 @@ object PersistentSummaryHelper {
 
     def apply(s: HashSet[K]): S =
       apply0(s)
+  }
+
+  private class VectorSummarizer[A, S](val summary: Summary[A, S], val spec: CacheBuilderSpec) extends (Vector[A] => S) {
+
+    def getChildren(s: VectorIterator[A]): Array[AnyRef] = {
+      s.depth match {
+        case 1 => s.display0
+        case 2 => s.display1
+        case 3 => s.display2
+        case 4 => s.display3
+        case 5 => s.display4
+        case 6 => s.display5
+        case _ => null
+      }
+    }
+
+    def aggregate(children: Array[AnyRef], depth: Int, offset:Int, start: Int, max: Int): S =
+      if(children eq null) summary.empty
+      else depth match {
+        case 0 => summary.empty
+        case 1 =>
+          var i = 0
+          var o = offset
+          var r = summary.empty
+          while(i < children.length) {
+            val element = children(i)
+            if(element ne null)
+              r = summary.combine(r, summary.apply(element.asInstanceOf[A]))
+            o += 1
+            i += 1
+          }
+          r
+        case _ =>
+          var i = 0
+          var o = offset
+          var r = summary.empty
+          while(i < children.length) {
+            val child = children(i)
+            if(child ne null)
+              r = summary.combine(r, aggregate(child.asInstanceOf[Array[AnyRef]], depth - 1, o, start, max))
+            o += (1 << (depth * 5))
+            i += 1
+          }
+          r
+      }
+
+    def apply(v: Vector[A]): S = {
+      // the iterator also has the display pointers, so it is essentially a vector itself. But calling v.iterator
+      // will take care of the dirty flag handling for us.
+      val iter = v.iterator
+      aggregate(getChildren(iter), iter.depth, 0, v.startIndex, v.endIndex)
+    }
   }
 
   private abstract class HashMapSummarizerBase[X, S] {
