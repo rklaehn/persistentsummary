@@ -5,7 +5,7 @@
 
 # PersistentSummary
 
-This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections such as [`scala.collection.immutable.TreeSet`](http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.TreeSet). This can yield to large efficiency gains when retaining a complex summary property of large collections.
+This library allows to define persistent summaries of ***existing*** immutable, tree-based scala collections such as [`TreeSet`](http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.TreeSet) or [`Vector`](http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.Vector). This can yield to large efficiency gains when retaining a complex summary property of large collections.
 
 ## Demo
 
