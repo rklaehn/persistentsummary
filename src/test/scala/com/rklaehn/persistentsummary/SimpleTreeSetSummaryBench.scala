@@ -4,7 +4,7 @@ import ichi.bench.Thyme
 
 import scala.collection.immutable.TreeSet
 
-object SimpleSummaryBench extends App {
+object SimpleTreeSetSummaryBench extends App {
 
   val th = Thyme.warmed(warmth = Thyme.HowWarm.BenchOff, verbose = println)
 
