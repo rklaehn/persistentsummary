@@ -2,15 +2,15 @@ import ReleaseTransformations._
 
 lazy val summarizerSettings = Seq(
   organization := "com.rklaehn",
-  scalaVersion := "2.11.7",
-  crossScalaVersions := Seq("2.10.5", "2.11.7"),
+  scalaVersion := "2.12.4",
+  crossScalaVersions := Seq("2.12.4", "2.11.11"),
   libraryDependencies ++= Seq(
     "com.google.guava" % "guava" % "18.0",
-    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-    "org.scalacheck" %% "scalacheck" % "1.11.6" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
 
     // thyme
-    "ichi.bench" % "thyme" % "0.1.1" % "test" from "https://github.com/Ichoran/thyme/raw/9ff531411e10c698855ade2e5bde77791dd0869a/Thyme.jar"
+    "com.github.ichoran" %% "thyme" % "0.1.2-SNAPSHOT" % "test"
   ),
   scalacOptions ++= Seq(
     "-deprecation",
