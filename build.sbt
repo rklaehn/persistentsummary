@@ -4,6 +4,7 @@ lazy val summarizerSettings = Seq(
   organization := "com.rklaehn",
   scalaVersion := "2.12.4",
   crossScalaVersions := Seq("2.12.4", "2.11.11"),
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
     "com.google.guava" % "guava" % "18.0",
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
